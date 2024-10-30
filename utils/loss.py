@@ -1,38 +1,62 @@
 import torch.nn as nn
 from torch.nn import MSELoss, L1Loss
 
+class AmpLoss(nn.Module):
+    def __init__(self):
+        super(AmpLoss, self).__init__()
+        self.cri = nn.L1Loss()
+
+    def forward(self, x, y):
+        x = torch.fft.rfft2(x, norm='backward')
+        x_mag =  torch.abs(x)
+        y = torch.fft.rfft2(y, norm='backward')
+        y_mag = torch.abs(y)
+
+        return self.cri(x_mag,y_mag)
+
+class PhaLoss(nn.Module):
+    def __init__(self):
+        super(PhaLoss, self).__init__()
+        self.cri = nn.L1Loss()
+
+    def forward(self, x, y):
+        x = torch.fft.rfft2(x, norm='backward')
+        x_mag = torch.angle(x)
+        y = torch.fft.rfft2(y, norm='backward')
+        y_mag = torch.angle(y)
+
+        return self.cri(x_mag, y_mag)
+
 class Losses(nn.Module):
-    def __init__(self, classes, names, weights, positions, gt_positions):
+    def __init__(self, types, weights):
         super().__init__()
         self.module_list = nn.ModuleList()
-        self.names = names
+        self.types = types
         self.weights = weights
-        self.positions = positions
-        self.gt_positions = gt_positions
-        for class_name in classes:
-            module_class = eval(class_name)
-            self.module_list.append(module_class())
+        for loss_type in types:
+            if loss_type == 'MSE':
+                self.module_list.append(MSELoss())
+            elif loss_type == 'L1':
+                self.module_list.append(L1Loss())
+            elif loss_type == 'AmpLoss':
+                self.module_list.append(AmpLoss())
+            elif loss_type == 'PhaLoss':
+                self.module_list.append(PhaLoss())
 
     def __len__(self):
-        return len(self.names)
+        return len(self.types)
 
-    def forward(self, outputs, targets):
+    def forward(self, preds, gts):
         losses = []
-        for i in range(len(self.names)):
-            loss = self.module_list[i](outputs[self.positions[i]], targets[self.gt_positions[i]]) * self.weights[i]
+        for i in range(len(self.types)):
+            loss = self.module_list[i](preds[i],gts[i]) * self.weights[i]
             losses.append(loss)
         return losses
 
 def build_loss(config):
-    loss_names = config['types']
-    loss_classes = config['classes']
+    loss_types = config['types']
     loss_weights = config['weights']
-    loss_positions = config['which_stage']
-    loss_gt_positions = config['which_gt']
-    assert len(loss_names) == len(loss_weights) == \
-           len(loss_classes) == len(loss_positions) == \
-           len(loss_gt_positions)
-    criterion = Losses(classes=loss_classes, names=loss_names,
-                          weights=loss_weights, positions=loss_positions,
-                          gt_positions=loss_gt_positions)
+
+    assert len(loss_weights) == len(loss_types)
+    criterion = Losses(types=loss_types, weights=loss_weights)
     return criterion

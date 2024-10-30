@@ -1,12 +1,4 @@
-# --------------------------------------------------------
-# Swin Transformer
-# Copyright (c) 2021 Microsoft
-# Licensed under The MIT License [see LICENSE for details]
-# Written by Ze Liu
-# --------------------------------------------------------
-
 from torch import optim as optim
-# from pytorch_lamb import Lamb
 
 def build_optimizer(config, model):
     """
@@ -22,12 +14,11 @@ def build_optimizer(config, model):
 
     opt_lower = config['optimizer']['type'].lower()
     optimizer = None
-    if opt_lower == 'sgd':
-        optimizer = optim.SGD(parameters, momentum=config['optimizer']['momentum'], nesterov=True,
-                              lr=config['base_lr'], weight_decay=config['weight_decay'])
-    elif opt_lower == 'adamw':
+    if opt_lower == 'adamw':
         optimizer = optim.AdamW(parameters, eps=config['optimizer']['eps'], betas=config['optimizer']['betas'],
                                 lr=config['base_lr'], weight_decay=config['weight_decay'])
+    else:
+        raise NotImplementedError(f"Optimizer {opt_lower} not supported")
 
     return optimizer
 

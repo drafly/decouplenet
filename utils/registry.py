@@ -40,7 +40,7 @@ class Registry():
             name = name + '_' + suffix
 
         assert (name not in self._obj_map), (f"An object named '{name}' was already registered "
-                                             f"in '{self._name}' registry!")
+                                            f"in '{self._name}' registry!")
         self._obj_map[name] = obj
 
     def register(self, obj=None, suffix=None):
@@ -83,4 +83,3 @@ class Registry():
 
 DATASET_REGISTRY = Registry('dataset')
 MODEL_REGISTRY = Registry('model')
-FORWARD_REGISTRY = Registry('forward')

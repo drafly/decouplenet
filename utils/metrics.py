@@ -1,5 +1,18 @@
 import torch
+import torch.nn.functional as F
+import warnings
 from torch import nn
+from torchmetrics.image.lpip import LearnedPerceptualImagePatchSimilarity
+
+def get_lpips_torch(x, gt):
+    '''
+    x,gt : tensor with shape (b,3,h,w), data_range is [0,1]
+    '''
+    lpips = LearnedPerceptualImagePatchSimilarity(net_type='squeeze').cuda()
+    x = x * 2.0 - 1.0
+    gt = gt * 2.0 - 1.0
+    lpips_score = lpips(x, gt)
+    return lpips_score
 
 class PSNR(nn.Module):
     def __init__(self):
@@ -17,14 +30,6 @@ def get_psnr_torch(x, gt, data_range=255.0):
     return 20 * torch.log10(data_range / torch.sqrt(mse))
 
 
-# Copyright 2020 by Gongfan Fang, Zhejiang University.
-# All rights reserved.
-import warnings
-
-import torch
-import torch.nn.functional as F
-
-
 def _fspecial_gauss_1d(size, sigma):
     r"""Create 1-D gauss kernel
     Args:
@@ -40,7 +45,6 @@ def _fspecial_gauss_1d(size, sigma):
     g /= g.sum()
 
     return g.unsqueeze(0).unsqueeze(0)
-
 
 def gaussian_filter(input, win):
     r""" Blur input with 1-D kernel
@@ -69,7 +73,6 @@ def gaussian_filter(input, win):
             )
 
     return out
-
 
 def _ssim(X, Y, data_range, win, size_average=True, K=(0.01, 0.03)):
 
@@ -109,7 +112,6 @@ def _ssim(X, Y, data_range, win, size_average=True, K=(0.01, 0.03)):
     ssim_per_channel = torch.flatten(ssim_map, 2).mean(-1)
     cs = torch.flatten(cs_map, 2).mean(-1)
     return ssim_per_channel, cs
-
 
 def ssim(
     X,
@@ -167,7 +169,6 @@ def ssim(
         return ssim_per_channel.mean()
     else:
         return ssim_per_channel.mean(1)
-
 
 def ms_ssim(
     X, Y, data_range=255, size_average=True, win_size=11, win_sigma=1.5, win=None, weights=None, K=(0.01, 0.03)
@@ -243,7 +244,6 @@ def ms_ssim(
     else:
         return ms_ssim_val.mean(1)
 
-
 class SSIM(torch.nn.Module):
     def __init__(
         self,
@@ -285,7 +285,6 @@ class SSIM(torch.nn.Module):
             K=self.K,
             nonnegative_ssim=self.nonnegative_ssim,
         )
-
 
 class MS_SSIM(torch.nn.Module):
     def __init__(
