@@ -1,1 +1,0 @@
-python runner.py -cfg configs/fuji/baseline.yaml --test --resume $*

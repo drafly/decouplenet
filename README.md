@@ -1,7 +1,5 @@
-# DMN: Decoupled Multi-Stage Network for  Full-Process ISP Low-Light Enhancement
+# DecoupleNet: Domain-Specific Task Decoupling Network for RAW Low-Light Enhancement
 This is the official code for the Decoupled Image-domain Multi-Stage Network, which is used for low-light enhancement
-
-
 
 ## Data Preparation
 
@@ -27,56 +25,32 @@ This is the official code for the Decoupled Image-domain Multi-Stage Network, wh
     <td> MCR </td>
     <th> <a href='https://github.com/TCL-AILab/Abandon_Bayer-Filter_See_in_the_Dark'>Abandoning the Bayer-Filter to See in the Dark</a> (<a href='https://drive.google.com/file/d/1Q3NYGyByNnEKt_mREzD2qw9L2TuxCV_r/view'>dataset only</a>) </th>
 
-
-**Acceleration**
-
-Directly training with the RAW format leads to a bottleneck on cpu, you could simply preprocess them with the following command:
-
-```bash
-bash scripts/preprocess_sid.sh
-```
-
-Or 
-
-```bash
-# A simple example
-python scripts/preprocess/preprocess_sid.py --data-path dataset/sid --camera Sony --split long
-```
-
 ## Pretrained Models
-
+You can download the pretrained models at [google drive](https://drive.google.com/drive/folders/1BsRThTCWwZQVAvL-5mDQ40mE8Xax9wFP?usp=drive_link), then put them in the following path
 | Trained on | 🔗 Path                           |
 | ---------- | -------------------------------- |
-| SID Sony   | ./pretrained/sony_model_best.pth |
-| SID Fuji   | ./pretrained/fuji_model_best.pth |
-| MCR        | ./pretrained/mcr_model_best.pth  |
-
-
+| SID Sony   | ./pretrained/sony.pth |
+| SID Fuji   | ./pretrained/fuji.pth |
+| MCR        | ./pretrained/mcr.pth  |
 
 
 ## Evaluation
 
-Shell scripts are provided for benchmarking on various datasets, making it easy to assess the performance of your models. Here’s how you can use them:
-
-```bash
-bash benchmarks/[SCRIPT] [CKPT]
-
-# A simple example.
-# To benchmark DNF on SID Sony dataset, and save the result.
-bash benchmarks/sid_sony.sh pretrained/sony_model_best.pth --save-image
+```python
+python test_sony.py
 ```
-
-
-
-
-
+```python
+python test_fuji.py
+```
+```python
+python test_mcr.py
+```
 ## Training 
 
 Training from scratch!
 
-```bash
-# Just use your config file!
-python runner.py -cfg [CFG]
+```python
+python train.py -cfg ./configs/sony.yaml
 ```
 
 

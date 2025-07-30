@@ -1,1 +1,0 @@
-python runner.py -cfg configs/mcr/baseline.yaml --test --resume $*

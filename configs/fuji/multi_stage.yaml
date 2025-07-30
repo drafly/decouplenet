@@ -1,7 +1,0 @@
-base:
-  - base.yaml
-
-tag: multistage
-
-model:
-  type: MultiStageNet
