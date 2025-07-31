@@ -53,9 +53,19 @@ Training from scratch!
 python train.py -cfg ./configs/sony.yaml
 ```
 
-
-
-
+## Citation
+If there is any help for your research, please star this repository and if you want to follow this work, you can cite as follows:
+```md
+@article{HUANG2025112203,
+  title = {DecoupleNet: Domain-specific Task Decoupling Network for Low-Light Image Enhancement},
+  author = {Huang, Peiliang and Chen, Xianmin and Feng, Xiaoxu and Wang, Qiangqiang and Zhang, Dingwen and Han, Longfei and Han, Junwei},
+  year = {2025},
+  journal = {Pattern Recognition},
+  pages = {112203},
+  issn = {0031-3203},
+  doi = {10.1016/j.patcog.2025.112203}
+}
+```
 
 ## Acknowledgement
 
